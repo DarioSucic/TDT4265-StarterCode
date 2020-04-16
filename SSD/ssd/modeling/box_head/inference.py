@@ -7,8 +7,7 @@ class PostProcessor:
     def __init__(self, cfg):
         super().__init__()
         self.cfg = cfg
-        self.width = cfg.INPUT.IMAGE_SIZE
-        self.height = cfg.INPUT.IMAGE_SIZE
+        self.width, self.height = cfg.INPUT.IMAGE_SIZE
 
     def __call__(self, detections):
         batches_scores, batches_boxes = detections
