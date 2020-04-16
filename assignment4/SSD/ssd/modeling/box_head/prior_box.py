@@ -22,26 +22,43 @@ class PriorBox:
                     are relative to the image size.
         """
         priors = []
-        for k, f in enumerate(self.feature_maps):
-            scale = self.image_size / self.strides[k]
-            for i, j in product(range(f), repeat=2):
+        for k, (fx, fy) in enumerate(self.feature_maps):
+
+            # TODO: Make strides 2d as well
+
+            x_scale = self.image_size[0] / self.strides[k]
+            y_scale = self.image_size[1] / self.strides[k]
+
+            #scale = self.image_size / self.strides[k]
+            
+            # for i, j in product(range(f), repeat=2):
+            for i, j in product(range(fx), range(fy)):
                 # unit center x,y
-                cx = (j + 0.5) / scale
-                cy = (i + 0.5) / scale
+                cx = (j + 0.5) / x_scale
+                cy = (i + 0.5) / y_scale
 
                 # small sized square box
                 size = self.min_sizes[k]
-                h = w = size / self.image_size
+                
+                # h = w = size / self.image_size
+                w = size / self.image_size[0]
+                h = size / self.image_size[1]
                 priors.append([cx, cy, w, h])
 
                 # big sized square box
                 size = sqrt(self.min_sizes[k] * self.max_sizes[k])
-                h = w = size / self.image_size
+                # h = w = size / self.image_size
+                w = size / self.image_size[0]
+                h = size / self.image_size[1]
+                
                 priors.append([cx, cy, w, h])
 
                 # change h/w ratio of the small sized box
                 size = self.min_sizes[k]
-                h = w = size / self.image_size
+                # h = w = size / self.image_size
+                w = size / self.image_size[0]
+                h = size / self.image_size[1]
+                
                 for ratio in self.aspect_ratios[k]:
                     ratio = sqrt(ratio)
                     priors.append([cx, cy, w * ratio, h / ratio])
