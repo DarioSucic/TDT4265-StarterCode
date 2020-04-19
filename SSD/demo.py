@@ -14,7 +14,7 @@ from ssd.utils.checkpoint import CheckPointer
 
 
 @torch.no_grad()
-def run_demo(cfg, ckpt, score_threshold, images_dir: pathlib.Path, output_dir: pathlib.Path, dataset_type):
+def run_demo(cfg, ckpt, score_threshold, images_dir: pathlib.Path, output_dir: pathlib.Path, dataset_type, num_images=None):
     if dataset_type == "voc":
         class_names = VOCDataset.class_names
     elif dataset_type == 'coco':
@@ -42,7 +42,7 @@ def run_demo(cfg, ckpt, score_threshold, images_dir: pathlib.Path, output_dir: p
     transforms = build_transforms(cfg, is_train=False)
     model.eval()
     drawn_images = []
-    for i, image_path in enumerate(tqdm.tqdm(image_paths, desc="Predicting on images")):
+    for i, image_path in enumerate(tqdm.tqdm(image_paths[:num_images], desc="Predicting on images")):
         image_name = image_path.stem
 
         image = np.array(Image.open(image_path).convert("RGB"))

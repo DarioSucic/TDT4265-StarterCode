@@ -13,3 +13,4 @@ mnist_detection/
 outputs/
 original_mnist/
 SSD/datasets/
+SSD/waymo.bat
