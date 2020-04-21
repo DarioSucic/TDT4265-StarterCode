@@ -10,6 +10,7 @@ def build_transforms(cfg, is_train=True):
             ToPercentCoords(),
             Resize(cfg.INPUT.IMAGE_SIZE),
             SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+            RandomMirror(),
             ToTensor(),
         ]
     else:

@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn as nn
-from torchvision.models import resnet34
+import torchvision.models as models
 
 class BasicModel(nn.Module):
 
@@ -15,33 +15,89 @@ class BasicModel(nn.Module):
         image_channels = cfg.MODEL.BACKBONE.INPUT_CHANNELS
         self.output_feature_size = cfg.MODEL.PRIORS.FEATURE_MAPS
         
-        resnet = resnet34(pretrained=True)
-
-        self.resnet = resnet
-        resnet_layers = list(resnet.children())
+        backbone = models.resnet50(pretrained=True)
         
-        extra_layers = [
-            # TODO
-        ]
+        self.feature_extractor = nn.Sequential(*list(backbone.children())[:7])
+        self.feature_extractor.out_channels = [1024, 512, 512, 256, 256, 256]
 
-        self.features = torch.nn.ModuleList([
-            nn.Sequential(*resnet_layers[0:6]),
-            *resnet_layers[6:9],
-            *extra_layers
-        ])
+        conv4_block1 = self.feature_extractor[-1][0]
+        conv4_block1.conv1.stride = (1, 1)
+        conv4_block1.conv2.stride = (1, 1)
+        conv4_block1.downsample[0].stride = (1, 1)
 
+        self.label_num = 4 
+        self._build_additional_features(self.feature_extractor.out_channels)
+        self.num_defaults = [4, 6, 6, 6, 4, 4]
+        self.loc = []
+        self.conf = []
+
+        for nd, oc in zip(self.num_defaults, self.feature_extractor.out_channels):
+            self.loc.append(nn.Conv2d(oc, nd * 4, kernel_size=3, padding=1))
+            self.conf.append(nn.Conv2d(oc, nd * self.label_num, kernel_size=3, padding=1))
+
+        self.loc = nn.ModuleList(self.loc)
+        self.conf = nn.ModuleList(self.conf)
+        self._init_weights()
+
+    def _build_additional_features(self, input_size):
+        self.additional_blocks = []
+        for i, (input_size, output_size, channels) in enumerate(zip(input_size[:-1], input_size[1:], [256, 256, 128, 128, 128])):
+            if i < 3:
+                layer = nn.Sequential(
+                    nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
+                    nn.BatchNorm2d(channels),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(channels, output_size, kernel_size=3, padding=1, stride=2, bias=False),
+                    nn.BatchNorm2d(output_size),
+                    nn.ReLU(inplace=True),
+                )
+            else:
+                layer = nn.Sequential(
+                    nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
+                    nn.BatchNorm2d(channels),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(channels, output_size, kernel_size=3, bias=False),
+                    nn.BatchNorm2d(output_size),
+                    nn.ReLU(inplace=True),
+                )
+
+            self.additional_blocks.append(layer)
+
+        self.additional_blocks = nn.ModuleList(self.additional_blocks)
+
+    def _init_weights(self):
+        layers = [*self.additional_blocks, *self.loc, *self.conf]
+        for layer in layers:
+            for param in layer.parameters():
+                if param.dim() > 1: nn.init.xavier_uniform_(param)
+
+    # Shape the classifier to the view of bboxes
+    def bbox_view(self, src, loc, conf):
+        ret = []
+        for s, l, c in zip(src, loc, conf):
+            ret.append((l(s).view(s.size(0), 4, -1), c(s).view(s.size(0), self.label_num, -1)))
+
+        locs, confs = list(zip(*ret))
+        locs, confs = torch.cat(locs, 2).contiguous(), torch.cat(confs, 2).contiguous()
+        return locs, confs
 
     def forward(self, x):
+        x = self.feature_extractor(x)
+        # print(x.shape)
 
-        # print(0, x.shape)
+        detection_feed = [x]
+        for l in self.additional_blocks:
+            x = l(x)
+            # print(x.shape)
+            detection_feed.append(x)
 
-        out_features = []
-        for i, feature in enumerate(self.features, 1):
-            x = feature(x)
-            # print(i, x.shape)
-            out_features.append(x)
+        # Feature Map 38x38x4, 19x19x6, 10x10x6, 5x5x6, 3x3x4, 1x1x4
+        #locs, confs = self.bbox_view(detection_feed, self.loc, self.conf)
 
-        return out_features
+        # For SSD 300, shall return nbatch x 8732 x {nlabels, nlocs} results
+        #return locs, confs
+
+        return detection_feed
 
 
 """

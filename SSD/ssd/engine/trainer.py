@@ -4,7 +4,7 @@ import logging
 import os
 import time
 import torch
-import torch.utils.tensorboard
+# import torch.utils.tensorboard
 from ssd.engine.inference import do_evaluation
 from ssd.utils.metric_logger import MetricLogger
 from ssd import torch_utils
@@ -31,8 +31,8 @@ def do_train(cfg, model,
 
     model.train()
 
-    summary_writer = torch.utils.tensorboard.SummaryWriter(
-        log_dir=os.path.join(cfg.OUTPUT_DIR, 'tf_logs'))
+    #summary_writer = torch.utils.tensorboard.SummaryWriter(
+    #    log_dir=os.path.join(cfg.OUTPUT_DIR, 'tf_logs'))
 
     max_iter = len(data_loader)
     start_iter = arguments["iteration"]
@@ -71,24 +71,24 @@ def do_train(cfg, model,
                 to_log.append(f'mem: {mem}M')
             logger.info(meters.delimiter.join(to_log))
             global_step = iteration
-            summary_writer.add_scalar(
-                'losses/total_loss', loss, global_step=global_step)
-            for loss_name, loss_item in loss_dict.items():
-                summary_writer.add_scalar(
-                    'losses/{}'.format(loss_name), loss_item,
-                    global_step=global_step)
-            summary_writer.add_scalar(
-                'lr', optimizer.param_groups[0]['lr'],
-                global_step=global_step)
+            #summary_writer.add_scalar(
+            #    'losses/total_loss', loss, global_step=global_step)
+            #for loss_name, loss_item in loss_dict.items():
+            #    summary_writer.add_scalar(
+            #        'losses/{}'.format(loss_name), loss_item,
+            #        global_step=global_step)
+            #summary_writer.add_scalar(
+            #    'lr', optimizer.param_groups[0]['lr'],
+            #    global_step=global_step)
 
         if iteration % cfg.MODEL_SAVE_STEP == 0:
             checkpointer.save("model_{:06d}".format(iteration), **arguments)
 
         if cfg.EVAL_STEP > 0 and iteration % cfg.EVAL_STEP == 0:
             eval_results = do_evaluation(cfg, model, iteration=iteration)
-            for eval_result, dataset in zip(eval_results, cfg.DATASETS.TEST):
-                write_metric(
-                    eval_result['metrics'], 'metrics/' + dataset,summary_writer, iteration)
+            #for eval_result, dataset in zip(eval_results, cfg.DATASETS.TEST):
+                #write_metric(
+                #    eval_result['metrics'], 'metrics/' + dataset,summary_writer, iteration)
             model.train()  # *IMPORTANT*: change to train mode after eval.
 
     checkpointer.save("model_final", **arguments)

@@ -1,0 +1,1 @@
+python train.py configs/train_tdt4265.yaml
