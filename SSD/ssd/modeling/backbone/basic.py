@@ -18,7 +18,7 @@ class BasicModel(nn.Module):
         backbone = models.resnet50(pretrained=True)
         
         self.feature_extractor = nn.Sequential(*list(backbone.children())[:7])
-        self.feature_extractor.out_channels = [1024, 1024, 1024, 512, 512, 512]
+        self.feature_extractor.out_channels = [1024, 2048, 1024, 1024, 512, 512]
 
         conv4_block1 = self.feature_extractor[-1][0]
         conv4_block1.conv1.stride = (1, 1)
@@ -31,7 +31,7 @@ class BasicModel(nn.Module):
 
     def _build_additional_features(self, input_size):
         self.additional_blocks = []
-        for i, (input_size, output_size, channels) in enumerate(zip(input_size[:-1], input_size[1:], [1024, 1024, 512, 512, 512])):
+        for i, (input_size, output_size, channels) in enumerate(zip(input_size[:-1], input_size[1:], [2048, 1024, 1024, 512, 512])):
             self.additional_blocks.append(nn.Sequential(
                 nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
                 nn.BatchNorm2d(channels),
