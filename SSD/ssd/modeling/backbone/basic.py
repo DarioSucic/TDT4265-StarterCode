@@ -31,7 +31,7 @@ class BasicModel(nn.Module):
 
     def _build_additional_features(self, input_size):
         self.additional_blocks = []
-        for i, (input_size, output_size, channels) in enumerate(zip(input_size[:-1], input_size[1:], [1024, 1024, 512, 512, 512])):
+        for i, (input_size, output_size, channels) in enumerate(zip(input_size[:-1], input_size[1:], [1024, 2048, 1024, 512, 512])):
             self.additional_blocks.append(nn.Sequential(
                 nn.Conv2d(input_size, channels, kernel_size=1, bias=False),
                 nn.BatchNorm2d(channels),
