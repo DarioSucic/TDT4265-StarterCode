@@ -150,8 +150,8 @@ class RegressionModel(nn.Module):
         self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
         self.act3 = nn.ReLU(inplace=True)
 
-        #self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        #self.act4 = nn.ReLU(inplace=True)
+        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act4 = nn.ReLU(inplace=True)
 
         self.output = nn.Conv2d(feature_size, num_anchors * 4, kernel_size=3, padding=1)
 
@@ -168,8 +168,8 @@ class RegressionModel(nn.Module):
         out = self.conv3(out)
         out = self.act3(out)
 
-        #out = self.conv4(out)
-        #out = self.act4(out)
+        out = self.conv4(out)
+        out = self.act4(out)
 
         out = self.output(out)
 
