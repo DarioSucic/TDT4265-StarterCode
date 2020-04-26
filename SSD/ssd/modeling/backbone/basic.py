@@ -4,16 +4,43 @@ import torch.nn as nn
 import torchvision.models as models
 import torch.nn.functional as F
 
+from ssd.sota.efficientnet.model import EfficientNet
+
+
 class BasicModel(nn.Module):
 
     def __init__(self, cfg):
 
         super().__init__()
         num_classes = cfg.MODEL.NUM_CLASSES
-        self.model = ResNet(num_classes, Bottleneck, [3, 8, 21, 3])
+        # self.model = Base(num_classes, Bottleneck, [3, 8, 21, 3])
+        self.model = EfficientNet.from_name("efficientnet-b4", override_params={
+            "num_classes": 5
+        })
+
+        state_dict = torch.load("ssd/sota/pretrained/efficientdet-d4.pth")
+        state_dict = {
+            "backbone.model." + ".".join(k.split(".")[2:]): v
+            for k, v in state_dict.items()
+            if k.startswith("backbone_net.model")
+        }
+
+        c = 0
+        for k in state_dict:
+            print(k)
+            c += 1
+            if c > 10:
+                break
+
+        exit()
+
+        self.model.load_state_dict(state_dict, strict=False)
 
     def forward(self, x):
-        out = self.model(x)
+        out = self.model.extract_features(x)
+        
+        print("out:", out.shape)
+
         # print("feature_maps:", [list(x.shape[2:]) for x in out])
         # print("out channels:", [x.shape[1] for x in out])
         return out
