@@ -2,14 +2,18 @@ from ssd.modeling.box_head.prior_box import PriorBox
 from .target_transform import SSDTargetTransform
 from .transforms import *
 
-
 def build_transforms(cfg, is_train=True):
     if is_train:
         transform = [
             ConvertFromInts(),
+
+            # RandomMirror(),
+            # RandomSampleCrop(),
+
             ToPercentCoords(),
             Resize(cfg.INPUT.IMAGE_SIZE),
             SubtractMeans(cfg.INPUT.PIXEL_MEAN),
+
             ToTensor(),
         ]
     else:

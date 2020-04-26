@@ -10,7 +10,7 @@ class BasicModel(nn.Module):
 
         super().__init__()
         num_classes = cfg.MODEL.NUM_CLASSES
-        self.model = ResNet(num_classes, Bottleneck, [3, 4, 16, 3])
+        self.model = ResNet(num_classes, Bottleneck, [3, 8, 21, 3])
 
     def forward(self, x):
         out = self.model(x)
@@ -24,7 +24,7 @@ class BasicModel(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, num_classes, block, layers):
-        self.inplanes = 64
+        self.inplanes = 128
         
         super().__init__()
         
@@ -50,7 +50,7 @@ class ResNet(nn.Module):
         # Intrinsic Resnet values, don't change
         fpn_sizes = [512, 1024, 2048]
 
-        self.fpn = PyramidFeatures(*fpn_sizes, feature_size=256)
+        self.fpn = PyramidFeatures(*fpn_sizes, feature_size=1024)
 
         # self.init_weights()
 

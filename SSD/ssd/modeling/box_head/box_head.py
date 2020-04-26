@@ -138,38 +138,39 @@ class BoxPredictor(nn.Module):
         return cls_logits, bbox_preds
 
 class RegressionModel(nn.Module):
-    def __init__(self, num_features_in, num_anchors, feature_size=256):
+    def __init__(self, num_features_in, num_anchors, feature_size=64):
         super().__init__()
 
-        self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
-        self.act1 = nn.ReLU(inplace=True)
+        #self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
+        #self.act1 = nn.ReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act2 = nn.ReLU(inplace=True)
+        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act2 = nn.ReLU(inplace=True)
 
-        self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act3 = nn.ReLU(inplace=True)
+        # self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act3 = nn.ReLU(inplace=True)
 
-        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act4 = nn.ReLU(inplace=True)
+        # self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act4 = nn.ReLU(inplace=True)
 
+        feature_size = num_features_in
         self.output = nn.Conv2d(feature_size, num_anchors * 4, kernel_size=3, padding=1)
 
     def forward(self, x):
 
         out = x
 
-        out = self.conv1(out)
-        out = self.act1(out)
+        #out = self.conv1(out)
+        #out = self.act1(out)
 
-        out = self.conv2(out)
-        out = self.act2(out)
+        # out = self.conv2(out)
+        # out = self.act2(out)
 
-        out = self.conv3(out)
-        out = self.act3(out)
+        # out = self.conv3(out)
+        # out = self.act3(out)
 
-        out = self.conv4(out)
-        out = self.act4(out)
+        # out = self.conv4(out)
+        # out = self.act4(out)
 
         out = self.output(out)
 
@@ -186,11 +187,11 @@ class ClassificationModel(nn.Module):
         self.num_classes = num_classes
         self.num_anchors = num_anchors
 
-        self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
-        self.act1 = nn.ReLU(inplace=True)
+        # self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
+        # self.act1 = nn.ReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act2 = nn.ReLU(inplace=True)
+        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act2 = nn.ReLU(inplace=True)
 
         #self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
         #self.act3 = nn.ReLU(inplace=True)
@@ -198,6 +199,7 @@ class ClassificationModel(nn.Module):
         #self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
         #self.act4 = nn.ReLU(inplace=True)
 
+        feature_size = num_features_in
         self.output = nn.Conv2d(feature_size, num_anchors * num_classes, kernel_size=3, padding=1)
         #self.output_act = nn.Sigmoid()
 
@@ -205,11 +207,11 @@ class ClassificationModel(nn.Module):
         
         out = x
         
-        out = self.conv1(out)
-        out = self.act1(out)
+        #out = self.conv1(out)
+        #out = self.act1(out)
 
-        out = self.conv2(out)
-        out = self.act2(out)
+        # out = self.conv2(out)
+        # out = self.act2(out)
 
         #out = self.conv3(out)
         #out = self.act3(out)
