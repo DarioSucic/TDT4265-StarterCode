@@ -23,6 +23,7 @@ class MultiBoxLoss(nn.Module):
             labels (batch_size, num_priors): real labels of all the priors.
             gt_locations (batch_size, num_priors, 4): real boxes corresponding all the priors.
         """
+
         num_classes = confidence.size(2)
         with torch.no_grad():
             # derived from cross_entropy=sum(log(p))

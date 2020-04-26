@@ -2,23 +2,43 @@ MODEL:
     NUM_CLASSES: 5
     PRIORS:
       FEATURE_MAPS: [
-        [45, 60], [23, 30], [12, 15], [6, 8], [4, 6], [2, 4]
+        # [30, 40], [15, 20], [8, 10], [4, 5], [2, 3]  # 320x240
+        [45, 60], [23, 30], [12, 15], [6, 8], [3, 4]   # 480x360
       ]
+      BOXES_PER_LOCATION: [4, 6, 6, 6, 4]
+      ASPECT_RATIOS: [[2], [2, 3], [2, 3], [2, 3], [2]]
     BACKBONE:
         NAME: 'basic'
         PRETRAINED: False
-        OUT_CHANNELS: [1024, 1024, 1024, 512, 512, 512]
+        OUT_CHANNELS: [256, 256, 256, 256, 256]
         INPUT_CHANNELS: 3
+
 INPUT:
-    IMAGE_SIZE: [480, 360]
+    IMAGE_SIZE: [
+      # 320, 240
+      480, 360
+    ]
+
 DATASETS:
     TRAIN: ("tdt4265_train",)
     TEST: ("tdt4265_val", )
+
 SOLVER:
     MAX_ITER: 120000
     # LR_STEPS: [80000, 100000]
     GAMMA: 0.1
     BATCH_SIZE: 16
     LR: 1e-3
+    MOMENTUM: 0.9
+    # WEIGHT_DECAY: 0.0001
+    WARMUP_FACTOR: 0.25
+    WARMUP_ITERS: 100
+
+TEST:
+    BATCH_SIZE: 8
+
 OUTPUT_DIR: 'outputs/basic'
 DATASET_DIR: "datasets"
+EVAL_STEP: 500
+MODEL_SAVE_STEP: 500
+LOG_STEP: 10

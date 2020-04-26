@@ -65,7 +65,7 @@ cfg.DATASETS.TEST = ()
 # -----------------------------------------------------------------------------
 cfg.DATA_LOADER = CN()
 # Number of data loading threads
-cfg.DATA_LOADER.NUM_WORKERS = 4
+cfg.DATA_LOADER.NUM_WORKERS = 3
 cfg.DATA_LOADER.PIN_MEMORY = True
 
 # ---------------------------------------------------------------------------- #
@@ -96,8 +96,8 @@ cfg.TEST.BATCH_SIZE = 10
 # ---------------------------------------------------------------------------- #
 # Specific test options
 # ---------------------------------------------------------------------------- #
-cfg.EVAL_STEP = 500 # Evaluate dataset every eval_step, disabled when eval_step < 0
-cfg.MODEL_SAVE_STEP = 500 # Save checkpoint every save_step
+cfg.EVAL_STEP = 2000 # Evaluate dataset every eval_step, disabled when eval_step < 0
+cfg.MODEL_SAVE_STEP = 2000 # Save checkpoint every save_step
 cfg.LOG_STEP = 10 # Print logs every log_stepPrint logs every log_step
 cfg.OUTPUT_DIR = "outputs"
 cfg.DATASET_DIR = "datasets"
