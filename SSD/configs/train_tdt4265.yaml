@@ -16,9 +16,14 @@ DATASETS:
     TEST: ("tdt4265_val", )
 SOLVER:
     MAX_ITER: 120000
-    # LR_STEPS: [80000, 100000]
     GAMMA: 0.1
-    BATCH_SIZE: 16
+    BATCH_SIZE: 8
     LR: 1e-3
 OUTPUT_DIR: 'outputs/basic'
 DATASET_DIR: "datasets"
+
+TEST:
+    BATCH_SIZE: 6
+  
+EVAL_STEP: 2500
+MODEL_SAVE_STEP: 1000

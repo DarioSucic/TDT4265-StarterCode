@@ -50,6 +50,7 @@ cfg.INPUT = CN()
 cfg.INPUT.IMAGE_SIZE = [300, 300]
 # Values to be used for image normalization, RGB layout
 cfg.INPUT.PIXEL_MEAN = [123, 117, 104]
+cfg.INPUT.PIXEL_STD = [58.395, 57.120, 57.375]
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -65,7 +66,7 @@ cfg.DATASETS.TEST = ()
 # -----------------------------------------------------------------------------
 cfg.DATA_LOADER = CN()
 # Number of data loading threads
-cfg.DATA_LOADER.NUM_WORKERS = 4
+cfg.DATA_LOADER.NUM_WORKERS = 3
 cfg.DATA_LOADER.PIN_MEMORY = True
 
 # ---------------------------------------------------------------------------- #

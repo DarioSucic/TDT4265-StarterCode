@@ -22,9 +22,8 @@ def start_train(cfg):
     lr = cfg.SOLVER.LR 
     optimizer = make_optimizer(cfg, model, lr)
 
-    milestones = [step for step in cfg.SOLVER.LR_STEPS]
-    scheduler = make_lr_scheduler(cfg, optimizer, milestones)
-
+    scheduler = make_lr_scheduler(cfg, optimizer)
+    
     arguments = {"iteration": 0}
     save_to_disk = True
     checkpointer = CheckPointer(model, optimizer, scheduler, cfg.OUTPUT_DIR, save_to_disk, logger)

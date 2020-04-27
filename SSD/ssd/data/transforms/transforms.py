@@ -79,14 +79,15 @@ class ConvertFromInts(object):
         return image.astype(np.float32), boxes, labels
 
 
-class SubtractMeans(object):
-    def __init__(self, mean):
+class Normalize(object):
+    def __init__(self, mean, std):
         self.mean = np.array(mean, dtype=np.float32)
+        self.std = np.array(std, dtype=np.float32)
 
     def __call__(self, image, boxes=None, labels=None):
-        image = image.astype(np.float32)
         image -= self.mean
-        return image.astype(np.float32), boxes, labels
+        image /= self.std
+        return image, boxes, labels
 
 
 class ToAbsoluteCoords(object):
@@ -212,7 +213,7 @@ class RandomBrightness(object):
 
 class ToTensor(object):
     def __call__(self, cvimage, boxes=None, labels=None):
-        return torch.from_numpy(cvimage.astype(np.float32)).permute(2, 0, 1), boxes, labels
+        return torch.from_numpy(cvimage).permute(2, 0, 1), boxes, labels
 
 
 class RandomSampleCrop(object):

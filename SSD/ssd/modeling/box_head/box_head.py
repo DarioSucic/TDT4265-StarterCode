@@ -58,6 +58,7 @@ class BoxPredictor(nn.Module):
         self.cfg = cfg
         self.cls_headers = nn.ModuleList()
         self.reg_headers = nn.ModuleList()
+        self.num_classes = cfg.MODEL.NUM_CLASSES
         for level, (boxes_per_location, out_channels) in enumerate(
             zip(cfg.MODEL.PRIORS.BOXES_PER_LOCATION, cfg.MODEL.BACKBONE.OUT_CHANNELS)
         ):
@@ -67,21 +68,13 @@ class BoxPredictor(nn.Module):
             self.reg_headers.append(
                 self.reg_block(level, out_channels, boxes_per_location)
             )
-        self.init_parameters()
+        # self.init_parameters()
 
-    def cls_block(self, level, out_channels, boxes_per_location):
-        return nn.Conv2d(
-            out_channels,
-            boxes_per_location * self.cfg.MODEL.NUM_CLASSES,
-            kernel_size=3,
-            stride=1,
-            padding=1,
-        )
+    def cls_block(self, level, out_chan, boxes_per_location):
+        return nn.Conv2d(out_chan, boxes_per_location * self.num_classes, 3, 1, 1)
 
-    def reg_block(self, level, out_channels, boxes_per_location):
-        return nn.Conv2d(
-            out_channels, boxes_per_location * 4, kernel_size=3, stride=1, padding=1
-        )
+    def reg_block(self, level, out_chan, boxes_per_location):
+        return nn.Conv2d(out_chan, boxes_per_location * 4, 3, 1, 1)
 
     def init_parameters(self):
         for m in self.modules():
@@ -105,5 +98,7 @@ class BoxPredictor(nn.Module):
         bbox_preds = torch.cat(
             [l.view(l.shape[0], -1) for l in bbox_preds],
             dim=1).view(batch_size, -1, 4)
+
+        # cls_logits = cls_logits.sigmoid()
 
         return cls_logits, bbox_preds
